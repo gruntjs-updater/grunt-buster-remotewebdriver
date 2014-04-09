@@ -1,0 +1,43 @@
+{
+  "name": "grunt-buster-remotewebdriver",
+  "description": "Grunt task for running Buster.JS tests via WebDriver",
+  "version": "0.1.0",
+  "homepage": "https://github.com/zentooo/grunt-buster-remotewebdriver",
+  "author": {
+    "name": "Naosuke Yokoe"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zentooo/grunt-buster-remotewebdriver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zentooo/grunt-buster-remotewebdriver/issues"
+  },
+  "license": "MIT",
+  "main": "./tasks/buster-remotewebdriver.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "buster": "~0.6.13",
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9"
+  },
+  "dependencies": {
+    "wd": "~0.2.17",
+    "q": "~1.0.1",
+    "ip": "~0.3.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.0"
+  },
+  "keywords": [
+    "gruntplugin",
+    "grunt",
+    "buster",
+    "buster.js"
+  ],
+  "readmeFilename": "README.md",
+  "_id": "grunt-buster-remotewebdriver@0.1.0",
+  "_from": "grunt-buster-remotewebdriver@~0.1.0"
+}
