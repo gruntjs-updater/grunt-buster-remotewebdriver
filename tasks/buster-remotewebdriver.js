@@ -13,19 +13,18 @@ module.exports = function(grunt) {
             serverPort: 1111,
             testOptions: {}
         });
-        var remoteConfigs = getRemoteConfigsToRun(grunt, options.remoteConfigs);
 
         var busterServer = runBusterServer(options.serverHost, options.serverPort);
-        busterServer.then(function(server) {
-            remoteConfigs.then(function(configs) {
-                Q.all(captureBrowsers(configs, server.url + "/capture")).then(function(browsers) {
-                    runBusterTest(grunt, server.url, options.testOptions).then(function() {
-                        server.process.kill();
-                        browsers.forEach(function(browser) {
-                            browser.quit();
-                        });
-                        done();
+        var remoteConfigs = getRemoteConfigsToRun(grunt, options.remoteConfigs);
+
+        Q.spread([busterServer, remoteConfigs], function(server, configs) {
+            Q.all(captureBrowsers(configs, server.url + "/capture")).then(function(browsers) {
+                runBusterTest(grunt, server.url, options.testOptions).then(function() {
+                    server.process.kill();
+                    browsers.forEach(function(browser) {
+                        browser.quit();
                     });
+                    done();
                 });
             });
         });
@@ -56,7 +55,7 @@ function getRemoteConfigsToRun(grunt, remoteConfigs) {
         });
     }
     else {
-        deferred.resolve(filterConfigs(remoteConfigs));
+        deferred.resolve(filterConfigs(grunt, remoteConfigs));
     }
 
     return deferred.promise;
