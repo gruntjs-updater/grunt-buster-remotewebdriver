@@ -13,9 +13,20 @@ module.exports = function(grunt) {
             testOptions: {}
         });
 
+        var remoteConfigs;
+        if ( grunt.option("configs-to-run") ) {
+            var configsToRun = grunt.option("configs-to-run").split(/,\s*/);
+            remoteConfigs = options.remoteConfigs.filter(function(config) {
+                return configsToRun.indexOf(config.name) !== -1;
+            });
+        }
+        else {
+            remoteConfigs = options.remoteConfigs;
+        }
+
         var busterServer = runBusterServer(options.serverHost, options.serverPort);
         busterServer.then(function(server) {
-            Q.all(captureBrowsers(options.remoteConfigs, server.url + "/capture")).then(function(browsers) {
+            Q.all(captureBrowsers(remoteConfigs, server.url + "/capture")).then(function(browsers) {
                 runBusterTest(grunt, server.url, options.testOptions).then(function() {
                     server.process.kill();
                     browsers.forEach(function(browser) {
