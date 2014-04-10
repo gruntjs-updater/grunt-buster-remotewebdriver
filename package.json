@@ -19,7 +19,7 @@
     "node": ">= 0.8.0"
   },
   "devDependencies": {
-    "buster": "~0.6.13",
+    "buster": "~0.7.6",
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9"
   },
