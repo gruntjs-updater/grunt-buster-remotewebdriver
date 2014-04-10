@@ -26,7 +26,8 @@
   "dependencies": {
     "wd": "~0.2.17",
     "q": "~1.0.1",
-    "ip": "~0.3.0"
+    "ip": "~0.3.0",
+    "request": "~2.34.0"
   },
   "peerDependencies": {
     "grunt": "~0.4.0"

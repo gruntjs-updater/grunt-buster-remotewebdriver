@@ -1,4 +1,5 @@
 var childProcess = require("child_process");
+var request = require("request");
 var wd = require("wd");
 var ip = require("ip");
 var Q  = require("q");
@@ -12,32 +13,54 @@ module.exports = function(grunt) {
             serverPort: 1111,
             testOptions: {}
         });
-
-        var remoteConfigs;
-        if ( grunt.option("configs-to-run") ) {
-            var configsToRun = grunt.option("configs-to-run").split(/,\s*/);
-            remoteConfigs = options.remoteConfigs.filter(function(config) {
-                return configsToRun.indexOf(config.name) !== -1;
-            });
-        }
-        else {
-            remoteConfigs = options.remoteConfigs;
-        }
+        var remoteConfigs = getRemoteConfigsToRun(grunt, options.remoteConfigs);
 
         var busterServer = runBusterServer(options.serverHost, options.serverPort);
         busterServer.then(function(server) {
-            Q.all(captureBrowsers(remoteConfigs, server.url + "/capture")).then(function(browsers) {
-                runBusterTest(grunt, server.url, options.testOptions).then(function() {
-                    server.process.kill();
-                    browsers.forEach(function(browser) {
-                        browser.quit();
+            remoteConfigs.then(function(configs) {
+                Q.all(captureBrowsers(configs, server.url + "/capture")).then(function(browsers) {
+                    runBusterTest(grunt, server.url, options.testOptions).then(function() {
+                        server.process.kill();
+                        browsers.forEach(function(browser) {
+                            browser.quit();
+                        });
+                        done();
                     });
-                    done();
                 });
             });
         });
     });
 };
+
+function filterConfigs(grunt, remoteConfigs) {
+    if ( grunt.option("configs-to-run") ) {
+        var configsToRun = grunt.option("configs-to-run").split(/,\s*/);
+        remoteConfigs = remoteConfigs.filter(function(config) {
+            return configsToRun.indexOf(config.name) !== -1;
+        });
+    }
+    return remoteConfigs;
+}
+
+function getRemoteConfigsToRun(grunt, remoteConfigs) {
+    var deferred = Q.defer();
+
+    if ( grunt.option("config-json") ) {
+        remoteConfigs = grunt.file.readJSON(grunt.option("config-json"));
+        deferred.resolve(filterConfigs(grunt, remoteConfigs));
+    }
+    else if ( grunt.option("config-json-url") ) {
+        request(grunt.option("config-json-url"), function(err, response, body) {
+            remoteConfigs = JSON.parse(body);
+            deferred.resolve(filterConfigs(grunt, remoteConfigs));
+        });
+    }
+    else {
+        deferred.resolve(filterConfigs(remoteConfigs));
+    }
+
+    return deferred.promise;
+}
 
 function runBusterServer(hostname, port) {
     var deferred = Q.defer();
