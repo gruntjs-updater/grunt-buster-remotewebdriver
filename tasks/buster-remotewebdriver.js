@@ -9,17 +9,18 @@ module.exports = function(grunt) {
         var done = this.async();
 
         var options = this.options({
-            serverHost: ip.address(),
-            serverPort: 1111,
-            testOptions: {}
+            testConfigs: {}
         });
 
-        var busterServer = runBusterServer(options.serverHost, options.serverPort);
+        var busterServerHost = grunt.option("buster-server-host") || ip.address();
+        var busterServerPort = grunt.option("buster-server-port") || 1111;
+        var busterServer = runBusterServer(busterServerHost, busterServerPort);
+
         var remoteConfigs = getRemoteConfigsToRun(grunt, options.remoteConfigs);
 
         Q.spread([busterServer, remoteConfigs], function(server, configs) {
             Q.all(captureBrowsers(configs, server.url + "/capture")).then(function(browsers) {
-                runBusterTest(grunt, server.url, options.testOptions).then(function() {
+                runBusterTest(grunt, server.url, options.testConfigs).then(function() {
                     server.process.kill();
                     browsers.forEach(function(browser) {
                         browser.quit();
