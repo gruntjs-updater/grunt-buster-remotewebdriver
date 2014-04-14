@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
         var busterServerHost = grunt.option("buster-server-host") || ip.address();
         var busterServerPort = grunt.option("buster-server-port") || 1111;
-        var busterServer = runBusterServer(busterServerHost, busterServerPort);
+        var busterServer = runBusterServer(grunt, busterServerHost, busterServerPort);
 
         var remoteConfigs = getRemoteConfigsToRun(grunt, options.remoteConfigs);
 
@@ -62,7 +62,7 @@ function getRemoteConfigsToRun(grunt, remoteConfigs) {
     return deferred.promise;
 }
 
-function runBusterServer(hostname, port) {
+function runBusterServer(grunt, hostname, port) {
     var deferred = Q.defer();
     // We do not have to bind given hostname (it is for external access)
     var busterServer = childProcess.spawn("buster-server", ["--port", port], { env: process.env });
@@ -75,6 +75,9 @@ function runBusterServer(hostname, port) {
                 process: busterServer
             });
         }
+    });
+    busterServer.stderr.on("data", function(data) {
+        grunt.log.error(data);
     });
 
     return deferred.promise;
