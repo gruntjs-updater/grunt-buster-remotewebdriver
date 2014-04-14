@@ -1,7 +1,7 @@
 {
   "name": "grunt-buster-remotewebdriver",
   "description": "Grunt task for running Buster.JS tests via WebDriver",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/zentooo/grunt-buster-remotewebdriver",
   "author": {
     "name": "Naosuke Yokoe"
@@ -39,6 +39,6 @@
     "buster.js"
   ],
   "readmeFilename": "README.md",
-  "_id": "grunt-buster-remotewebdriver@0.1.0",
-  "_from": "grunt-buster-remotewebdriver@~0.1.0"
+  "_id": "grunt-buster-remotewebdriver@0.0.1",
+  "_from": "grunt-buster-remotewebdriver@~0.0.1"
 }
